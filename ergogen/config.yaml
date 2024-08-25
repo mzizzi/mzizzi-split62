@@ -1,0 +1,204 @@
+units:
+  kx: cx
+  ky: cy
+  px: kx+5
+  py: ky+5
+  ringStagger: 2
+  middleStagger: 2
+  indexStagger: -2
+  innerStagger: 0
+  $default_height: 17 
+  $default_width: 18
+
+points:
+  zones:
+    matrix:
+      # Fix placement on KiCAD sheet.
+      anchor:
+        shift: [150, -150]
+      key:
+        padding: ky
+        spread: kx
+      columns:
+        # These are arbitrary column names.
+        outer:
+          key.column_net: D29
+        pinky:
+          key.column_net: D28
+        ring:
+          key.stagger: ringStagger
+          key.column_net: D27
+        middle:
+          key.stagger: middleStagger
+          key.column_net: D26
+        index:
+          key.stagger: indexStagger
+          key.column_net: D22
+          rows.mod.skip: true
+        inner:
+          key.stagger: innerStagger
+          key.column_net: D20
+          rows.mod.width: 1.5kx
+          rows.mod.skip: true
+      rows:
+        # These are arbitrary row names.
+        mod:
+          row_net: D6
+        bottom:
+          row_net: D5
+        home:
+          row_net: D4
+        top:
+          row_net: D3
+        num:
+          row_net: D2
+    thumb:
+      key:
+        padding: ky
+        spread: kx
+      anchor:
+        ref: matrix_index_mod
+        shift: [6, -1.5]
+      columns:
+        thumbInner:
+          key:
+            splay: -10
+            column_net: D7
+        thumbMiddle:
+            key:
+              splay: -5
+              width: kx
+              rotate: 0
+              shift: [1,1]
+              column_net: D8
+        thumbOuter:
+          key:
+            height: ky
+            width: kx
+            rotate: 0
+            splay: -2
+            shift: [1.5,0]
+            column_net: D9
+      rows:
+        thumb:
+          row_net: D23
+outlines:
+  keys:
+    - what: rectangle
+      where: true
+      size: [kx, ky]
+  keyPlateHoles:
+    - what: rectangle
+      where: true
+      size: [13.85,13.85]
+  pcbOutline:
+    - what: polygon
+      operation: stack
+      fillet: 3
+      points:
+        - ref: matrix_outer_num
+          shift: [-0.5px, 0.5py]
+        - ref: matrix_ring_num
+          shift: [-0.5px, 0.5py]
+        - ref: matrix_middle_num
+          shift: [-0.5px, 0.5py]
+        - ref: matrix_middle_num
+          shift: [0.5px, 0.5py]
+        - ref: matrix_index_num
+          shift: [0.5px, 0.5py]
+        - ref: matrix_inner_num
+          shift: [36, 0.5py]
+
+        - ref: thumb_thumbOuter_thumb
+          shift: [12, .5py]
+        - ref: thumb_thumbOuter_thumb
+          shift: [12, -0.5py]
+
+        - ref: thumb_thumbInner_thumb
+          shift: [-.5kx, -0.5py]
+        - ref: matrix_ring_mod
+          shift: [0px, -0.5py]
+        - ref: matrix_pinky_mod
+          shift: [0.5px, -0.5py]
+        - ref: matrix_pinky_mod
+          shift: [-0.5px, -0.5py]
+        - ref: matrix_outer_mod
+          shift: [-0.5px, -0.5py]
+  keyPlate:
+    - name: pcbOutline
+    - operation: subtract
+      name: keyPlateHoles
+pcbs:
+  split62:
+    outlines:
+      main:
+        outline: pcbOutline
+    footprints:
+      choc_hotswap:
+        what: choc
+        where: true
+        params:
+          keycaps: true
+          reverse: true
+          hotswap: true
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+      diode:
+        what: diode
+        where: true
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [0, -5]
+      elitepi_rightHand:
+        what: elitepi
+        params:
+          orientation: "down"
+          silk_layer: "back"
+        where:
+          ref: matrix_inner_top
+          shift: [21,7.75]
+          rotate: -90
+      elitepi_leftHand:
+        what: elitepi
+        params:
+          orientation: "up"
+          silk_layer: "front"
+        where:
+          ref: matrix_inner_top
+          shift: [24,9]
+          rotate: -90
+      trrs:
+        what: trrs
+        params:
+          A: VCC
+          B: GND
+          C: D1
+          D: D0
+          reverse: true
+        where:
+          ref: matrix_inner_home
+          shift: [35, 0]
+        adjust:
+          rotate: -86.6
+      mountingHoleInnerLower:
+        what: mountinghole
+        where:
+          ref: [thumb_thumbMiddle_thumb]
+          shift: [0, .5ky+2.5]
+      mountingHoleInnerUpper:
+        what: mountinghole
+        where:
+          ref: [matrix_inner_top]
+          shift: [-0.5kx, 0.5ky]
+      mountingHoleOuterUpper:
+        what: mountinghole
+        where:
+          ref: [matrix_outer_top]
+          shift: [0.5kx, 0.5ky]
+      mountingHoleOuterLower:
+        what: mountinghole
+        where:
+          ref: [matrix_outer_bottom]
+          shift: [0.5kx, -0.5ky]

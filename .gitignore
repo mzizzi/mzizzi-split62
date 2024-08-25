@@ -1,0 +1,7 @@
+node_modules/
+.nocommit/
+ergogen/output/
+*.kicad_pcb.lck
+fp-info-cache
+*.zip
+*.code-workspace
